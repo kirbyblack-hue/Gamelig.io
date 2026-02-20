@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamelig | Oyun Yükle</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #ffffff;
+            --text-color: #ffffff;
+            --accent-green: #1a9380;
+            --btn-pink: #ff007a;
+            --input-bg: rgba(255,255,255,0.1);
+        }
+
+        .light-mode {
+            --bg-color: #f4f7f6;
+            --text-color: #1a1a1a;
+            --input-bg: rgba(0,0,0,0.05);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        header { width: 100%; text-align: center; padding: 30px 0; position: relative; }
+        
+        .mode-toggle {
+            position: absolute; right: 20px; top: 20px;
+            padding: 8px 15px; border-radius: 20px; cursor: pointer;
+            border: 2px solid var(--accent-green); background: transparent; color: var(--text-color);
+        }
+
+        /* Yükleme Bölümü */
+        .upload-container {
+            background: var(--input-bg);
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            border: 3px dashed var(--btn-pink);
+            max-width: 500px;
+            width: 90%;
+            margin-bottom: 40px;
+        }
+
+        .upload-btn {
+            background: var(--btn-pink);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 0, 122, 0.3);
+        }
+
+        .upload-btn:hover { transform: scale(1.05); }
+
+        .settings-label {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-weight: bold;
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            margin-top: 15px;
+            opacity: 0.8;
+        }
+
+        /* Kategori Kartları (Görseldeki Stil) */
+        .category-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .cat-card {
+            background: white;
+            color: #1a1a1a;
+            width: 150px;
+            height: 170px;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-bottom: 8px solid var(--accent-green);
+        }
+
+        .cat-card span { font-size: 1.8rem; margin-bottom: 10px; }
+
+        /* Dropdown ve Diğer Alanlar */
+        .dropdown-box {
+            width: 80%;
+            max-width: 700px;
+            margin: 20px 0;
+            border: 2px solid var(--accent-green);
+            border-radius: 15px;
+            cursor: pointer;
+        }
+        .drop-header { padding: 15px; background: var(--accent-green); color: white; font-weight: bold; text-align: center;}
+    </style>
+</head>
+<body>
+
+<header>
+    <button class="mode-toggle" onclick="document.body.classList.toggle('light-mode')">🌓 Mod Değiştir</button>
+    <h1 style="color: var(--accent-green);">GAMELIG</h1>
+    <p>Oyununu Yükle, Eğlenceye Katıl! ✨</p>
+</header>
+
+<div class="upload-container">
+    <h3>🚀 Yeni Oyununu Paylaş</h3>
+    
+    <div class="settings-label">
+        <label>
+            <input type="radio" name="uploadType" value="folder" checked onclick="updateUploadMode()"> 📂 Klasör
+        </label>
+        <label>
+            <input type="radio" name="uploadType" value="single" onclick="updateUploadMode()"> 📄 Tek Dosya (.html)
+        </label>
+    </div>
+
+    <input type="file" id="folderInp" style="display:none" webkitdirectory directory multiple>
+    <input type="file" id="fileInp" style="display:none" accept=".html, .htm">
+
+    <button class="upload-btn" id="mainUploadBtn" onclick="triggerUpload()">
+        DOSYALARI SEÇ
+    </button>
+
+    <p class="info-text" id="statusMsg">Şu an: <b>Klasör Modu</b> aktif.</p>
+</div>
+
+<div class="category-container">
+    <div class="cat-card"><span>🔥</span> Popüler</div>
+    <div class="cat-card"><span>⭐</span> Yeni</div>
+    <div class="cat-card"><span>🧠</span> Zeka</div>
+    <div class="cat-card"><span>🔫</span> Aksiyon</div>
+</div>
+
+<div class="dropdown-box">
+    <div class="drop-header">📂 Tüm Oyunlar Listesi (Tıkla)</div>
+</div>
+
+<script>
+    function updateUploadMode() {
+        const type = document.querySelector('input[name="uploadType"]:checked').value;
+        const msg = document.getElementById('statusMsg');
+        
+        if(type === 'single') {
+            msg.innerHTML = "Şu an: <b>Tek Dosya Modu</b> aktif. (Sadece .html veya .htm)";
+        } else {
+            msg.innerHTML = "Şu an: <b>Klasör Modu</b> aktif. Tüm proje klasörünü seçebilirsin.";
+        }
+    }
+
+    function triggerUpload() {
+        const type = document.querySelector('input[name="uploadType"]:checked').value;
+        if(type === 'folder') {
+            document.getElementById('folderInp').click();
+        } else {
+            document.getElementById('fileInp').click();
+        }
+    }
+
+    // Dosya seçildiğinde tepki ver
+    document.getElementById('fileInp').onchange = function() {
+        if(this.files.length > 0) alert("Harika! " + this.files[0].name + " dosyası başarıyla seçildi! 🎉");
+    };
+
+    document.getElementById('folderInp').onchange = function() {
+        if(this.files.length > 0) alert(this.files.length + " dosya içeren klasör hazır! Şenlik başlıyor! 🎈");
+    };
+</script>
+
+</body>
+</html>
